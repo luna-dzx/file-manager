@@ -9,7 +9,7 @@ use button::*;
 fn main() -> Result<(), String> {
     let win = WindowConfig::default()
         .transparent(true)
-        .decorations(false)
+        .decorations(true)
         .resizable(true);
 
     notan::init_with(State::new)
@@ -24,10 +24,6 @@ fn main() -> Result<(), String> {
 pub struct State {
     time: f32,
     button_handler: ButtonHandler,
-}
-
-fn hello_world(){
-    println!("hello world")
 }
 
 impl State {
