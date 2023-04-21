@@ -558,13 +558,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "file-manager"
-version = "0.1.0"
-dependencies = [
- "notan",
-]
-
-[[package]]
 name = "flate2"
 version = "1.0.25"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1104,6 +1097,13 @@ name = "linux-raw-sys"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b085a4f2cde5781fc4b1717f2e86c62f5cda49de7ba99a7c2eae02b61c9064c"
+
+[[package]]
+name = "little-wizard-file-manager"
+version = "0.1.0"
+dependencies = [
+ "notan",
+]
 
 [[package]]
 name = "lock_api"
