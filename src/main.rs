@@ -20,10 +20,10 @@ fn main() -> Result<(), String> {
         .build()
 }
 
-#[derive(AppState, Clone)]
+#[derive(AppState)]
 pub struct State {
     time: f32,
-    buttons: Vec<Button>,
+    button_handler: ButtonHandler,
 }
 
 fn hello_world(){
@@ -32,17 +32,29 @@ fn hello_world(){
 
 impl State {
     fn new(_gfx: &mut Graphics) -> Self {
-        let bounds = Bounds::new((100.0,100.0),(100.0,50.0));
-        let buttons = Vec::new();
+        let button_style = ButtonStyle {
+            base_color: Color::new(0.5,0.5,0.5,1.0),
+            hover_color: Color::new(0.8,0.8,0.8,1.0),
+            click_color: Color::new(1.0,1.0,1.0,1.0),
+            corner_radius: 5.0,
+        };
+
+        let button_handler = ButtonHandler::new(button_style);
 
         let mut state = Self {
             time: 0.0,
-            buttons,
+            button_handler,
         };
 
-        state.buttons.push(Button::new(State::test_state,bounds));
-        state.buttons.push(Button::new(|_| println!("AAAAAAAAAAA\nwriting cool little closure"),
-                                       Bounds::new((100.0,300.0),(100.0,50.0))));
+        state.button_handler.add(
+            State::test_state,
+            Bounds::new((100.0,100.0),(100.0,50.0))
+        );
+        state.button_handler.add(
+            |_| println!("AAAAAAAAAAA\nwriting cool little closure"),
+            Bounds::new((100.0,300.0),(100.0,50.0))
+        );
+
 
         state
     }
@@ -51,42 +63,13 @@ impl State {
         let pos = app.mouse.position();
         let clicked = app.mouse.left_is_down();
 
-        for i in 0..self.buttons.len() {
-            // mouse buffer
-            if !clicked {
-                self.buttons[i].mouse_buffer = false;
-            }
-
-            // if mouse outside button
-            if !self.buttons[i].bounds.contains(pos){
-                self.buttons[i].color = Color::new(0.5,0.5,0.5,1.0);
-                continue
-            }
-
-            // mouse inside button:
-
-            // if mouse not clicked
-            if !clicked {
-                self.buttons[i].color = Color::new(0.8,0.8,0.8,1.0);
-                continue
-            }
-
-            // mouse clicked and inside button:
-
-            self.buttons[i].color = Color::new(1.0,1.0,1.0,1.0);
-
-            if !self.buttons[i].mouse_buffer {
-                (self.buttons[i].func)(self);
-                self.buttons[i].mouse_buffer = true;
-            }
-        }
+        let func = self.button_handler.update(pos,clicked);
+        (func)(self);
     }
 
     fn draw_buttons(&mut self, draw: &mut Draw)
     {
-        for button in self.buttons.iter_mut() {
-            button.draw(draw);
-        }
+        self.button_handler.draw(draw);
     }
 
     pub fn test_state(state: &mut State){
