@@ -1,9 +1,13 @@
+mod button;
+mod file_list;
+mod theming;
+
 use notan::draw::*;
 use notan::prelude::*;
 use std::ops::Deref;
-
-mod button;
 use button::*;
+use file_list::*;
+use theming::*;
 
 #[notan_main]
 fn main() -> Result<(), String> {
@@ -24,10 +28,12 @@ fn main() -> Result<(), String> {
 pub struct State {
     time: f32,
     button_handler: ButtonHandler,
+    theme: Theme,
+    file_list: FileList,
 }
 
 impl State {
-    fn new(_gfx: &mut Graphics) -> Self {
+    fn new(gfx: &mut Graphics) -> Self {
         let button_style = ButtonStyle {
             base_color: Color::new(0.5,0.5,0.5,1.0),
             hover_color: Color::new(0.8,0.8,0.8,1.0),
@@ -37,9 +43,18 @@ impl State {
 
         let button_handler = ButtonHandler::new(button_style);
 
+        let font = gfx
+            .create_font(include_bytes!("assets/Ubuntu-B.ttf"))
+            .unwrap();
+
+        let theme = Theme::from_path(gfx,"fart.toml");
+        let file_list = FileList::new();
+
         let mut state = Self {
             time: 0.0,
             button_handler,
+            theme,
+            file_list
         };
 
         state.button_handler.add(
@@ -84,9 +99,8 @@ fn draw(gfx: &mut Graphics, state: &mut State) {
 
     draw.clear(Color::TRANSPARENT);
     let size = gfx.size();
-    draw.triangle((0.5, 0.0), (0.0, 1.0), (1.0, 1.0))
-        .scale(size.0 as f32,size.1 as f32)
-        .color(Color::MAGENTA);
+
+    state.file_list.draw(&mut draw, size, &state.theme);
 
     state.draw_buttons(&mut draw);
 

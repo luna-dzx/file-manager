@@ -7,3 +7,6 @@ edition = "2021"
 
 [dependencies]
 notan = "0.9.5"
+toml = "0.7.3"
+serde = "1.0.160"
+serde-hex = "0.1.0"
