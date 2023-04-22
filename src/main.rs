@@ -43,9 +43,6 @@ impl State {
 
         let button_handler = ButtonHandler::new(button_style);
 
-        let font = gfx
-            .create_font(include_bytes!("assets/Ubuntu-B.ttf"))
-            .unwrap();
 
         let theme = Theme::from_path(gfx,"fart.toml");
         let file_list = FileList::new();
