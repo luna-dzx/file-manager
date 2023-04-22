@@ -97,7 +97,7 @@ fn update(app: &mut App, state: &mut State) {
 fn draw(gfx: &mut Graphics, state: &mut State) {
     let mut draw = gfx.create_draw();
 
-    draw.clear(Color::TRANSPARENT);
+    draw.clear(state.theme.secondary_color);
     let size = gfx.size();
 
     state.file_list.draw(&mut draw, size, &state.theme);

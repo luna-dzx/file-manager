@@ -1,24 +1,4 @@
-primary_color = [
-    36,
-    35,
-    46,
-    255,
-]
-secondary_color = [
-    52,
-    50,
-    74,
-    255,
-]
-highlight_focused = [
-    255,
-    255,
-    0,
-    255,
-]
-highlight_unfocused = [
-    0,
-    0,
-    0,
-    255,
-]
+primary_color = [36, 35, 46, 255]
+secondary_color = [52, 50, 74, 255]
+highlight_focused = [255, 255, 0, 255]
+highlight_unfocused = [0, 0, 0, 255]
