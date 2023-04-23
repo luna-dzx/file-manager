@@ -1,4 +1,5 @@
-primary_color = [36, 35, 46, 255]
-secondary_color = [52, 50, 74, 255]
-highlight_focused = [255, 255, 0, 255]
-highlight_unfocused = [0, 0, 0, 255]
+[Colors]
+primary = 0x24232eff
+highlight_focused = 0xffff00ff
+highlight_unfocused = 0x000000ff
+secondary = 0x34324aff

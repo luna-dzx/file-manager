@@ -43,8 +43,10 @@ impl State {
 
         let button_handler = ButtonHandler::new(button_style);
 
+        //let font = gfx.create_font(include_bytes!("assets/Ubuntu-B.ttf"));
 
-        let theme = Theme::from_path(gfx,"fart.toml");
+
+        let theme = Theme::from_path("fart.toml");
         let file_list = FileList::new();
 
         let mut state = Self {
@@ -94,7 +96,7 @@ fn update(app: &mut App, state: &mut State) {
 fn draw(gfx: &mut Graphics, state: &mut State) {
     let mut draw = gfx.create_draw();
 
-    draw.clear(state.theme.secondary_color);
+    draw.clear(state.theme.colors["secondary"]);
     let size = gfx.size();
 
     state.file_list.draw(&mut draw, size, &state.theme);

@@ -1,84 +1,98 @@
-use std::fs;
-use std::io::ErrorKind;
-use notan::draw::*;
-use notan::prelude::*;
-use toml::de::Error;
-use serde::{Deserialize, Serialize};
-use std::path::Path;
+use std::{
+    fs,
+    io::ErrorKind,
+    path::Path
+};
+use std::collections::HashMap;
+use notan::{
+    prelude::*,
+    draw::*
+};
 
 pub struct Theme {
-    pub primary_color: Color,
-    pub secondary_color: Color,
-    pub highlight_focused: Color,
-    pub highlight_unfocused: Color,
-
-    pub font: Font,
+    pub colors : HashMap<String,Color>
 }
-
-#[derive(Serialize,Deserialize)]
-pub struct RawTheme {
-    pub primary_color: [u8;4],
-    pub secondary_color: [u8;4],
-    pub highlight_focused: [u8;4],
-    pub highlight_unfocused: [u8;4],
-}
-
-
 impl Theme{
-    pub fn defaults(gfx:&mut Graphics) -> Theme {
+    pub fn defaults() -> Theme {
 
-        let font = gfx.create_font(include_bytes!("assets/Ubuntu-B.ttf")).unwrap();
+        let mut colors:HashMap<String,Color> = HashMap::new();
 
-        Theme{
-            primary_color:       Color::from(0x24232eff),
-            secondary_color:     Color::from(0x34324aff),
-            highlight_focused:   Color::YELLOW,
-            highlight_unfocused: Color::BLACK,
-            font
+        colors.insert("primary".to_string(),Color::from(0x24232eff));
+        colors.insert("secondary".to_string(),Color::from(0x34324aff));
+        colors.insert("highlight_focused".to_string(),Color::YELLOW);
+        colors.insert("highlight_unfocused".to_string(),Color::BLACK);
+
+
+        Theme {
+            colors
         }
     }
 
-    fn from_raw(gfx:&mut Graphics, raw: RawTheme) -> Self {
-
-        let font = gfx.create_font(include_bytes!("assets/Ubuntu-B.ttf")).unwrap();
-
-        Theme{
-            primary_color:       Color::from(raw.primary_color),
-            secondary_color:     Color::from(raw.secondary_color),
-            highlight_focused:   Color::from(raw.highlight_focused),
-            highlight_unfocused: Color::from(raw.highlight_unfocused),
-            font
-        }
-    }
-
-    fn to_raw(&self) -> RawTheme {
-        RawTheme {
-            primary_color: self.primary_color.rgba_u8(),
-            secondary_color: self.secondary_color.rgba_u8(),
-            highlight_focused: self.highlight_focused.rgba_u8(),
-            highlight_unfocused: self.highlight_unfocused.rgba_u8(),
-        }
+    fn to_toml(&self)->String{
+        format!(
+        "[Colors]\n\
+        {}",
+        self.colors.iter()
+            .map(|(key,value)| format!("{} = 0x{:08x}\n",key,value.hex()))
+            .collect::<String>())
     }
 
 
-    pub fn from_path(gfx:&mut Graphics, path:&str)->Theme{
+    fn from_string(string:String)->Theme{
+        let mut theme = Theme::defaults();
+        let mut file_section = "";
+
+
+        let mut load_color = |line: &str| {
+            let line : Vec<&str> = line.split("=").collect();
+            if let Ok(line_value) = line[1].parse::<u32>(){
+
+                let entry = theme.colors.entry(line[0].to_string()).or_insert(Color::BLACK);
+                *entry = Color::from(line_value);
+
+                println!("add");
+            }
+        };
+
+
+
+        for line in string.lines(){
+            let line = line.trim();
+
+            if line.chars().next().unwrap() == '['{
+                file_section = &line[1..line.len()-1];
+                println!("{}",file_section);
+                continue;
+            }
+
+            match file_section{
+                "Colors"=>{load_color(line);}
+                _=>()
+            }
+
+        }
+
+        theme
+    }
+
+    pub fn from_path(path:&str)->Theme{
         // attempt to load from file
         if let Ok(config_content) = fs::read_to_string(path) {
-            if let Ok(raw) = toml::from_str::<RawTheme>(&config_content){
-                return Theme::from_raw(gfx, raw);
-            }
+            println!("read");
+            let theme = Theme::from_string(config_content);
+            theme.save_to_path(path);
+            return theme
         }
 
         println!("default thingy");
         // load default
-        let theme = Theme::defaults(gfx);
+        let theme = Theme::defaults();
         theme.save_to_path(path);
         theme
     }
 
     pub fn save_to_path(&self, path:&str){
-        let toml_string = toml::to_string_pretty(&self.to_raw()).unwrap();
-
+        let toml_string = self.to_toml();
         fs::File::create(path).unwrap();
         fs::write(path,toml_string).unwrap();
     }

@@ -29,7 +29,7 @@ impl FileList {
 
             draw.rect(pos, rect_size)
                 .corner_radius(10.0)
-                .color(theme.primary_color);
+                .color(theme.colors["primary"]);
 
         };
 
@@ -58,11 +58,13 @@ impl FileList {
                 Color::WHITE
             }
             else{
-                theme.secondary_color
+                theme.colors["secondary"]
             };
 
+            /*TRIES TO GET FONT FROM THEME
+            BANISHED EXILED AND SCORNED FOR NOW
             draw.text(&theme.font,file_name).color(color)
-                .position(5.0,y);
+                .position(5.0,y);*/
 
             y+=20.0;
         }
