@@ -37,39 +37,37 @@ impl Theme{
             .collect::<String>())
     }
 
+    pub fn load_color_str(&mut self, line: &str) {
+        let line : Vec<&str> = line.split("=").collect();
+        if let Ok(line_value) = line[1].parse::<u32>(){
+
+            let entry = self.colors.entry(line[0].to_string()).or_insert(Color::BLACK);
+            *entry = Color::from(line_value);
+
+            println!("add");
+        }
+    }
+
 
     fn from_string(string:String)->Theme{
         let mut theme = Theme::defaults();
         let mut file_section = "";
 
-
-        let mut load_color = |line: &str| {
-            let line : Vec<&str> = line.split("=").collect();
-            if let Ok(line_value) = line[1].parse::<u32>(){
-
-                let entry = theme.colors.entry(line[0].to_string()).or_insert(Color::BLACK);
-                *entry = Color::from(line_value);
-
-                println!("add");
-            }
-        };
-
-
-
         for line in string.lines(){
             let line = line.trim();
 
+            // get section name
             if line.chars().next().unwrap() == '['{
                 file_section = &line[1..line.len()-1];
                 println!("{}",file_section);
                 continue;
             }
 
+            // based on section name, call appropriate load
             match file_section{
-                "Colors"=>{load_color(line);}
+                "Colors"=> theme.load_color_str(line),
                 _=>()
             }
-
         }
 
         theme
