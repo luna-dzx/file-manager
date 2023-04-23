@@ -1,5 +1,5 @@
 [Colors]
-secondary = 0x34324aff
 highlight_unfocused = 0x000000ff
+secondary = 0x34324aff
 primary = 0x24232eff
 highlight_focused = 0xffff00ff

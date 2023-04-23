@@ -46,7 +46,7 @@ impl State {
         //let font = gfx.create_font(include_bytes!("assets/Ubuntu-B.ttf"));
 
 
-        let theme = Theme::from_path("fart.toml");
+        let theme = Theme::from_path("theme.toml");
         let file_list = FileList::new();
 
         let mut state = Self {
