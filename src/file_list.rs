@@ -12,7 +12,6 @@ impl FileList {
         Self {padding: 2.0, radius: 10.0}
     }
 
-
     pub fn draw(&self, draw:&mut Draw, size: (i32,i32), theme: &Theme) {
 
         let top_bar: f32 = 50.0 / (size.1 as f32);

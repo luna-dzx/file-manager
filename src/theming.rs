@@ -1,26 +1,27 @@
 use std::{
     fs,
     io::ErrorKind,
-    path::Path
+    path::Path,
+    collections::BTreeMap
 };
-use std::collections::HashMap;
 use notan::{
     prelude::*,
     draw::*
 };
 
 pub struct Theme {
-    pub colors : HashMap<String,Color>
+    pub colors : BTreeMap<String,Color>
 }
 impl Theme{
     pub fn defaults() -> Theme {
 
-        let mut colors:HashMap<String,Color> = HashMap::new();
+        let mut colors:BTreeMap<String,Color> = BTreeMap::new();
 
         colors.insert("primary".to_string(),Color::from(0x24232eff));
         colors.insert("secondary".to_string(),Color::from(0x34324aff));
-        colors.insert("highlight_focused".to_string(),Color::YELLOW);
-        colors.insert("highlight_unfocused".to_string(),Color::BLACK);
+        colors.insert("button".to_string(),Color::from(0x66647dff));
+        colors.insert("button_hover".to_string(),Color::from(0x8b89a1ff));
+        colors.insert("button_click".to_string(),Color::from(0xb4b2cfff));
 
 
         Theme {
@@ -41,13 +42,10 @@ impl Theme{
         let line : Vec<&str> = line.split("=").collect();
         if let Ok(line_value) = line[1].parse::<u32>(){
 
-            let entry = self.colors.entry(line[0].to_string()).or_insert(Color::BLACK);
+            let entry = self.colors.entry(line[0].to_string()).or_insert(Color::from(line_value));
             *entry = Color::from(line_value);
-
-            println!("add");
         }
     }
-
 
     fn from_string(string:String)->Theme{
         let mut theme = Theme::defaults();
@@ -59,7 +57,6 @@ impl Theme{
             // get section name
             if line.chars().next().unwrap() == '['{
                 file_section = &line[1..line.len()-1];
-                println!("{}",file_section);
                 continue;
             }
 

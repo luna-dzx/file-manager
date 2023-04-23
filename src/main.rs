@@ -5,6 +5,7 @@ mod theming;
 use notan::draw::*;
 use notan::prelude::*;
 use std::ops::Deref;
+use std::os::linux::raw::stat;
 use button::*;
 use file_list::*;
 use theming::*;
@@ -34,17 +35,9 @@ pub struct State {
 
 impl State {
     fn new(gfx: &mut Graphics) -> Self {
-        let button_style = ButtonStyle {
-            base_color: Color::new(0.5,0.5,0.5,1.0),
-            hover_color: Color::new(0.8,0.8,0.8,1.0),
-            click_color: Color::new(1.0,1.0,1.0,1.0),
-            corner_radius: 5.0,
-        };
-
-        let button_handler = ButtonHandler::new(button_style);
+        let button_handler = ButtonHandler::new();
 
         //let font = gfx.create_font(include_bytes!("assets/Ubuntu-B.ttf"));
-
 
         let theme = Theme::from_path("theme.toml");
         let file_list = FileList::new();
@@ -65,7 +58,6 @@ impl State {
             Bounds::new((100.0,300.0),(100.0,50.0))
         );
 
-
         state
     }
 
@@ -79,7 +71,7 @@ impl State {
 
     fn draw_buttons(&mut self, draw: &mut Draw)
     {
-        self.button_handler.draw(draw);
+        self.button_handler.draw(draw,&self.theme);
     }
 
     pub fn test_state(state: &mut State){

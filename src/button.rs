@@ -3,6 +3,7 @@ use notan::{
     draw::{Draw, DrawShapes},
 };
 
+use crate::theming::Theme;
 use super::State;
 
 pub enum ButtonState {
@@ -28,13 +29,6 @@ impl Bounds {
     }
 }
 
-pub struct ButtonStyle {
-    pub base_color: Color,
-    pub hover_color: Color,
-    pub click_color: Color,
-    pub corner_radius: f32,
-}
-
 pub struct Button {
     pub func: fn(&mut State),
     pub bounds: Bounds,
@@ -53,30 +47,28 @@ impl Button {
         }
     }
 
-    pub fn draw(&self, draw:&mut Draw, style:&ButtonStyle){
+    pub fn draw(&self, draw:&mut Draw, theme:&Theme){
 
         let color = match self.state{
-            ButtonState::Neutral => style.base_color,
-            ButtonState::Hovered => style.hover_color,
-            ButtonState::Clicked => style.click_color,
+            ButtonState::Neutral => theme.colors["button"],
+            ButtonState::Hovered => theme.colors["button_hover"],
+            ButtonState::Clicked => theme.colors["button_click"],
         };
 
         draw.rect(self.bounds.pos, self.bounds.size)
-            .corner_radius(style.corner_radius)
+            .corner_radius(5.0)//BE RID OF THIS PEASENT,SIMPLY TEMPORARY
             .color(color);
     }
 }
 
 pub struct ButtonHandler {
-    style: ButtonStyle,
     buttons: Vec<Button>,
 }
 
 impl ButtonHandler {
-    pub fn new(style: ButtonStyle) -> Self{
+    pub fn new() -> Self{
         let buttons = Vec::new();
         Self {
-            style,
             buttons
         }
     }
@@ -124,9 +116,9 @@ impl ButtonHandler {
         func
     }
 
-    pub fn draw(&self,draw:&mut Draw){
+    pub fn draw(&self,draw:&mut Draw,theme: &Theme){
         for button in self.buttons.iter() {
-            button.draw(draw, &self.style);
+            button.draw(draw, theme);
         }
     }
 }
